@@ -1,0 +1,35 @@
+# Maintainer: NoneNameDeveloper
+pkgname=wgtray
+_repo=wireguard-ui
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Minimal WireGuard tray / rofi / polybar frontend'
+arch=('x86_64')
+url='https://github.com/NoneNameDeveloper/wireguard-ui'
+license=('MIT')
+depends=('wireguard-tools' 'polkit' 'libayatana-appindicator')
+optdepends=(
+  'rofi: --rofi keyboard-driven picker'
+  'libnotify: desktop notifications'
+)
+makedepends=('go')
+source=("$_repo-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cd "$_repo-$pkgver"
+  export CGO_ENABLED=1
+  export GOFLAGS='-trimpath -mod=readonly -modcacherw'
+  go build -ldflags "-s -w -X main.Version=$pkgver -X github.com/NoneNameDeveloper/wireguard-ui/internal/tray.Version=$pkgver" \
+    -o build/wgtray ./cmd/wgtray
+}
+
+package() {
+  cd "$_repo-$pkgver"
+  install -Dm755 build/wgtray                   "$pkgdir/usr/bin/wgtray"
+  install -Dm644 contrib/desktop/wgtray.desktop "$pkgdir/usr/share/applications/wgtray.desktop"
+  install -Dm644 contrib/systemd/wgtray.service "$pkgdir/usr/lib/systemd/user/wgtray.service"
+  install -Dm644 contrib/polkit/90-wgtray.rules "$pkgdir/usr/share/polkit-1/rules.d/90-wgtray.rules"
+  install -Dm644 README.md                      "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 LICENSE                        "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

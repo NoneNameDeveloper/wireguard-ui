@@ -1,0 +1,12 @@
+[Unit]
+Description=wgtray — WireGuard systray
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/wgtray
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=graphical-session.target

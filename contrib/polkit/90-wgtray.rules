@@ -1,0 +1,16 @@
+// Polkit rule granting passwordless `wg-quick up/down` to members of the
+// `wheel` group when invoked via pkexec (e.g. from wgtray).
+//
+// Install:   sudo install -m 644 90-wgtray.rules /etc/polkit-1/rules.d/
+// Tighten:   change "wheel" to a dedicated group such as "wireguard"
+//            (create it with `sudo groupadd wireguard && sudo gpasswd -a $USER wireguard`).
+
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.policykit.exec" &&
+        subject.isInGroup("wheel")) {
+        var path = action.lookup("program");
+        if (path == "/usr/bin/wg-quick" || path == "/usr/local/bin/wg-quick") {
+            return polkit.Result.YES;
+        }
+    }
+});

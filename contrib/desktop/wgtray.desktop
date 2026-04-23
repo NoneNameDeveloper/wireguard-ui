@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=wgtray
+Comment=WireGuard systray
+Exec=wgtray
+Icon=network-vpn
+Terminal=false
+Categories=Network;
+StartupNotify=false
